@@ -2,6 +2,8 @@
 
 ### Step1: `On All Machines ( Master & All nodes ):`
 
+    ### INSTALL DOCKER 
+    
     sudo apt-get update
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
@@ -11,6 +13,8 @@
     sudo apt-get install -y docker-ce
     sudo service docker start ; clear
 
+    ### INSTALL KUBEADM,KUBELET,KUBECTL
+    
     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     sudo apt-get update ; clear
@@ -18,13 +22,14 @@
 	
 ### Step2: `On Master only:`
 
-    sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+    sudo kubeadm init --ignore-preflight-errors=all
 	
     sudo mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+    ## Weave
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" 
 	
     kubectl get nodes
     kubectl get all --all-namespaces
@@ -74,13 +79,14 @@
 
 ### Step2: `On Master only:`
 
-    sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+    sudo kubeadm init --ignore-preflight-errors=all
 
     sudo mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+    ## Weave Pod Network
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" 
 
     kubectl get nodes
     kubectl get all --all-namespaces
